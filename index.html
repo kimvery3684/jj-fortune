@@ -327,13 +327,33 @@ var APPS_URL = 'https://script.google.com/macros/s/AKfycbxE91qc1tEOK14QDqYzYnyMD
 
 var curType='saju', gender='';
 
-/* ════ 픽셀 이벤트 추적 ════ */
+/* ════ 픽셀 이벤트 추적 (수정완료) ════ */
 function trackAll(eventName,params){
   params=params||{};
   try{if(typeof fbq==='function')fbq('track',eventName,params);}catch(e){}
-  try{if(typeof gtag==='function'){gtag('event',eventName,params);if(eventName==='Lead')gtag('event','conversion',{'send_to':'AW-11248881444'});if(eventName==='CompleteRegistration')gtag('event','conversion',{'send_to':'AW-11248881444'});}}catch(e){}
-  try{if(typeof ttq!=='undefined'&&ttq.track)ttq.track(eventName,params);}catch(e){}
-  try{if(typeof kakaoPixel==='function'){var kp=kakaoPixel('6894979093878323675');if(eventName==='ViewContent')kp.viewContent({id:params.content_name||''});else if(eventName==='Lead'||eventName==='CompleteRegistration')kp.completeRegistration({name:params.content_name||''}); }}catch(e){}
+  try{if(typeof gtag==='function')gtag('event',eventName,params);}catch(e){}
+  try{if(typeof gtag==='function'){
+    if(eventName==='Lead')gtag('event','conversion',{'send_to':'AW-11248881444/GkgpCJ3M3vsbEKSe8fMp'});
+    if(eventName==='CompleteRegistration')gtag('event','conversion',{'send_to':'AW-11248881444/iOlKCM7C4fsbEKSe8fMp'});
+    if(eventName==='VVIPUnlock')gtag('event','conversion',{'send_to':'AW-11248881444/OdlYCNOR3_sbEKSe8fMp'});
+  }}catch(e){}
+  try{if(typeof ttq!=='undefined'&&ttq.track){
+    if(eventName==='Lead')ttq.track('SubmitForm',params);
+    else if(eventName==='CompleteRegistration')ttq.track('CompleteRegistration',params);
+    else if(eventName==='VVIPUnlock')ttq.track('Subscribe',params);
+    else ttq.track(eventName,params);
+  }}catch(e){}
+  try{if(typeof kakaoPixel==='function'){var kp=kakaoPixel('1391484460645531377');
+    if(eventName==='ViewContent')kp.viewContent({id:params.content_name||''});
+    else if(eventName==='Lead'||eventName==='CompleteRegistration')kp.completeRegistration({name:params.content_name||''});
+    else if(eventName==='VVIPUnlock')kp.completeRegistration({name:'VVIP_'+(params.content_name||'')});
+  }}catch(e){}
+  try{if(window.karrotPixel){
+    if(eventName==='ViewContent')window.karrotPixel.track('ViewContent');
+    else if(eventName==='Lead')window.karrotPixel.track('SubmitApplication');
+    else if(eventName==='CompleteRegistration')window.karrotPixel.track('Purchase');
+    else if(eventName==='VVIPUnlock')window.karrotPixel.track('Subscribe');
+  }}catch(e){}
 }
 
 var TM={saju:{t:'사주팔자',ic:'🏛️',rt:'사주팔자 분석 결과'},today:{t:'오늘의 운세',ic:'🌅',rt:'오늘의 운세'},love:{t:'연애운',ic:'💘',rt:'연애운 분석 결과'},money:{t:'재물운',ic:'💰',rt:'재물운 분석 결과'},career:{t:'직업·적성',ic:'🎯',rt:'직업·적성 분석 결과'},'2026':{t:'2026 신년운세',ic:'🐴',rt:'2026 병오년 신년운세'}};
@@ -554,8 +574,7 @@ function render(nm,gd,yr,mo,dy,cal,tm,data){
 function cpR(){var t='🔮 '+TM[curType].rt+'\n'+document.getElementById('rInfo').textContent+'\n\n'+document.getElementById('rBody').innerText;navigator.clipboard.writeText(t).then(function(){toast('결과가 복사되었습니다!');}).catch(function(){toast('복사 실패');});}
 function shK(){if(navigator.share)navigator.share({title:TM[curType].rt,text:'나의 운세 결과를 확인해보세요!',url:location.href});else cpR();}
 function toast(m){var t=document.getElementById('tst');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
-function unlockVVIP(){if(savedUser){savedUser.c2=true;saveData(savedUser,TM[curType].t+' (VVIP해제)');toast('🎉 VVIP 잠금 해제! 심층 분석을 불러옵니다...');render(savedUser.nm,savedUser.gd,savedUser.yr,savedUser.mo,savedUser.dy,savedUser.cal||'양력',savedUser.tm||'모름',lastResultData);}else{toast('⚠️ 사주 정보를 먼저 입력해 주세요');show('S1');}}
-setInterval(function(){document.getElementById('live').textContent=(1800+Math.floor(Math.random()*200)).toLocaleString();},15000);
+function unlockVVIP(){if(savedUser){savedUser.c2=true;saveData(savedUser,TM[curType].t+' (VVIP해제)');trackAll('VVIPUnlock',{content_name:TM[curType].t});toast('🎉 VVIP 잠금 해제! 심층 분석을 불러옵니다...');render(savedUser.nm,savedUser.gd,savedUser.yr,savedUser.mo,savedUser.dy,savedUser.cal||'양력',savedUser.tm||'모름',lastResultData);}else{toast('⚠️ 사주 정보를 먼저 입력해 주세요');show('S1');}}setInterval(function(){document.getElementById('live').textContent=(1800+Math.floor(Math.random()*200)).toLocaleString();},15000);
 
 /* ════ 궁합 ════ */
 var genderA='',genderB='';
